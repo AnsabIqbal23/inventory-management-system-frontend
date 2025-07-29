@@ -13,17 +13,17 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 px-4 font-sans">
       <div className="w-full max-w-md bg-white/10 backdrop-blur-md border border-white/20 text-white p-8 rounded-2xl shadow-2xl animate-fade-in">
-        <h1 className="text-4xl font-bold text-blue-400 text-center mb-4 tracking-wide">
+        <h1 className="text-4xl font-extrabold text-center mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent tracking-tight">
           Trackventory
         </h1>
-        <p className="text-sm text-center text-gray-300 mb-6">
-          Log in to access your inventory dashboard
+        <p className="text-center text-sm text-gray-300 mb-6 font-medium">
+          Keep your stock smartly tracked 🚀
         </p>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm mb-1">Email</label>
+            <label className="block text-sm mb-1 font-medium text-gray-300">Email</label>
             <input
               type="email"
               name="email"
@@ -35,7 +35,7 @@ const Login = () => {
             />
           </div>
           <div>
-            <label className="block text-sm mb-1">Password</label>
+            <label className="block text-sm mb-1 font-medium text-gray-300">Password</label>
             <input
               type="password"
               name="password"
@@ -48,14 +48,14 @@ const Login = () => {
           </div>
           <button
             type="submit"
-            className="w-full py-2 bg-blue-600 hover:bg-blue-700 transition duration-200 rounded-md font-semibold"
+            className="w-full py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition duration-200 rounded-md font-semibold text-white shadow-lg"
           >
             Sign In
           </button>
         </form>
-        <div className="mt-6 text-sm text-center text-gray-400">
+        <div className="mt-6 text-sm text-center text-gray-400 font-light">
           Don’t have an account?{" "}
-          <span className="text-blue-400 hover:underline cursor-pointer">
+          <span className="text-blue-400 hover:underline cursor-pointer font-medium">
             Register
           </span>
         </div>
