@@ -55,12 +55,17 @@ const Login = () => {
         if (response && response.success) {
           // Store only userData in session storage
           sessionStorage.setItem('userData', JSON.stringify(response));
+          console.log('User login successful, stored data:', response);
           
           // Display backend success message
           showBackendMessage(response, 'success');
           
-          // You can redirect here or update the UI
-          // window.location.href = '/dashboard';
+          // Redirect to dashboard after successful login
+          console.log('Redirecting to dashboard in 500ms...');
+          setTimeout(() => {
+            console.log('Navigating to dashboard now...');
+            navigate('/dashboard');
+          }, 500);
         } else {
           // Display backend error message
           showBackendMessage(response, 'error');
@@ -75,12 +80,17 @@ const Login = () => {
         if (response && response.success) {
           // Store only userData in session storage
           sessionStorage.setItem('userData', JSON.stringify(response));
+          console.log('Admin login successful, stored data:', response);
           
           // Display backend success message
           showBackendMessage(response, 'success');
           
-          // You can redirect here or update the UI
-          // window.location.href = '/admin-dashboard';
+          // Redirect to dashboard after successful login
+          console.log('Redirecting to dashboard in 500ms...');
+          setTimeout(() => {
+            console.log('Navigating to dashboard now...');
+            navigate('/dashboard');
+          }, 500);
         } else {
           // Display backend error message
           showBackendMessage(response, 'error');

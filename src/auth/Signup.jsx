@@ -71,8 +71,10 @@ const Signup = () => {
             country: ""
           });
           
-          // You can redirect here or update the UI
-          // window.location.href = '/login';
+          // Redirect to login after successful registration
+          setTimeout(() => {
+            navigate('/login');
+          }, 2000);
         } else {
           // Display backend error message
           showBackendMessage(response, 'error');
@@ -115,8 +117,10 @@ const Signup = () => {
             country: ""
           });
           
-          // You can redirect here or update the UI
-          // window.location.href = '/login';
+          // Redirect to login after successful registration
+          setTimeout(() => {
+            navigate('/login');
+          }, 2000);
         } else {
           // Display backend error message
           showBackendMessage(response, 'error');
