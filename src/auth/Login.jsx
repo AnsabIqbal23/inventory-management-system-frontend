@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { adminLogin, userLogin } from "@/services/API";
 import ToastManager from "../components/ToastManager";
 import { showBackendMessage, showLoginErrorToast } from "../utils/toast";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({ 
     password: "", 
     username: "" 
@@ -14,12 +16,24 @@ const Login = () => {
 
   // Check for existing session data on component mount
   useEffect(() => {
-    const userData = sessionStorage.getItem('userData');
-    
-    if (userData) {
-      const parsedData = JSON.parse(userData);
-      console.log("User already logged in:", parsedData);
-      // Don't show toast for existing session
+    try {
+      const userData = sessionStorage.getItem('userData');
+      
+      if (userData) {
+        const parsedData = JSON.parse(userData);
+        console.log("User already logged in:", parsedData);
+        
+        // Check if the session data is valid
+        if (!parsedData || !parsedData.success) {
+          // Clear invalid session data
+          sessionStorage.removeItem('userData');
+          console.log("Cleared invalid session data");
+        }
+      }
+    } catch (error) {
+      // Clear corrupted session data
+      sessionStorage.removeItem('userData');
+      console.log("Cleared corrupted session data:", error);
     }
   }, []);
 
@@ -35,10 +49,10 @@ const Login = () => {
       if (activeTab === "user") {
         console.log("Attempting user login with:", { username: formData.username, password: "***" });
         const response = await userLogin(formData.username, formData.password);
-        console.log("User login successful:", response);
+        console.log("User login response:", response);
         
         // Check if login was successful
-        if (response.success) {
+        if (response && response.success) {
           // Store only userData in session storage
           sessionStorage.setItem('userData', JSON.stringify(response));
           
@@ -55,10 +69,10 @@ const Login = () => {
       } else {
         console.log("Attempting admin login with:", { username: formData.username, password: "***" });
         const response = await adminLogin(formData.username, formData.password);
-        console.log("Admin login successful:", response);
+        console.log("Admin login response:", response);
         
         // Check if login was successful
-        if (response.success) {
+        if (response && response.success) {
           // Store only userData in session storage
           sessionStorage.setItem('userData', JSON.stringify(response));
           
@@ -77,6 +91,19 @@ const Login = () => {
       showLoginErrorToast(error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSignupClick = () => {
+    navigate('/signup');
+  };
+
+  const clearSessionData = () => {
+    try {
+      sessionStorage.removeItem('userData');
+      console.log("Session data cleared");
+    } catch (error) {
+      console.log("Error clearing session data:", error);
     }
   };
 
@@ -231,9 +258,12 @@ const Login = () => {
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-400">
             Don't have an account?{" "}
-            <a href="#" className="text-purple-400 hover:text-purple-300 font-medium transition-colors duration-200">
+            <button
+              onClick={handleSignupClick}
+              className="text-purple-400 hover:text-purple-300 font-medium transition-colors duration-200"
+            >
               Sign up
-            </a>
+            </button>
           </p>
         </div>
       </div>

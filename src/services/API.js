@@ -1,7 +1,7 @@
 //////////////////////////////////////// ADMIN API ////////////////////////////////////////
 
 export async function registerAdmin(username, email, password, confirmPassword, phone, location, city, state, country) {
-    let url = `http://localhost/api/users/admin/register`;
+    let url = `http://localhost:8081/api/users/admin/register`;
 
     let headers = {
         'Content-Type': 'application/json',
@@ -19,13 +19,31 @@ export async function registerAdmin(username, email, password, confirmPassword, 
         country,
     };
 
-    let response = await fetch(url, {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(body),
-    });
-    console.log(response.status)
-    return response;
+    try {
+        let response = await fetch(url, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(body),
+        });
+        
+        console.log("Admin registration status:", response.status);
+        
+        if (!response.ok) {
+            const errorData = await response.text();
+            throw new Error(`HTTP error! status: ${response.status}, message: ${errorData}`);
+        }
+        
+        const data = await response.json();
+        console.log("Admin registration response data:", data);
+        return data;
+    } catch (error) {
+        console.error("Admin registration error:", error);
+        // Return a structured error response instead of throwing
+        return {
+            success: false,
+            message: error.message || "Registration failed"
+        };
+    }
 };
 
 export async function adminLogin(username, password) {
@@ -59,14 +77,18 @@ export async function adminLogin(username, password) {
         return data;
     } catch (error) {
         console.error("Admin login error:", error);
-        throw error;
+        // Return a structured error response instead of throwing
+        return {
+            success: false,
+            message: error.message || "Login failed"
+        };
     }
 };
 
 //////////////////////////////////////// USER API ////////////////////////////////////////
 
 export async function registerUser(username, email, password, confirmPassword) {
-    let url = `http://localhost/api/users/register`;
+    let url = `http://localhost:8081/api/users/register`;
 
     let headers = {
         'Content-Type': 'application/json',
@@ -79,13 +101,31 @@ export async function registerUser(username, email, password, confirmPassword) {
         confirmPassword,
     };
 
-    let response = await fetch(url, {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(body),
-    });
-    console.log(response.status)
-    return response;
+    try {
+        let response = await fetch(url, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(body),
+        });
+        
+        console.log("User registration status:", response.status);
+        
+        if (!response.ok) {
+            const errorData = await response.text();
+            throw new Error(`HTTP error! status: ${response.status}, message: ${errorData}`);
+        }
+        
+        const data = await response.json();
+        console.log("User registration response data:", data);
+        return data;
+    } catch (error) {
+        console.error("User registration error:", error);
+        // Return a structured error response instead of throwing
+        return {
+            success: false,
+            message: error.message || "Registration failed"
+        };
+    }
 };
 
 export async function userLogin(username, password) {
@@ -119,6 +159,10 @@ export async function userLogin(username, password) {
         return data;
     } catch (error) {
         console.error("User login error:", error);
-        throw error;
+        // Return a structured error response instead of throwing
+        return {
+            success: false,
+            message: error.message || "Login failed"
+        };
     }
 };
