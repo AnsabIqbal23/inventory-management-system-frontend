@@ -1,0 +1,244 @@
+import React, { useState, useEffect } from "react";
+import { adminLogin, userLogin } from "@/services/API";
+import ToastManager from "../components/ToastManager";
+import { showBackendMessage, showLoginErrorToast } from "../utils/toast";
+
+const Login = () => {
+  const [formData, setFormData] = useState({ 
+    password: "", 
+    username: "" 
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [activeTab, setActiveTab] = useState("user");
+
+  // Check for existing session data on component mount
+  useEffect(() => {
+    const userData = sessionStorage.getItem('userData');
+    
+    if (userData) {
+      const parsedData = JSON.parse(userData);
+      console.log("User already logged in:", parsedData);
+      // Don't show toast for existing session
+    }
+  }, []);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    try {
+      if (activeTab === "user") {
+        console.log("Attempting user login with:", { username: formData.username, password: "***" });
+        const response = await userLogin(formData.username, formData.password);
+        console.log("User login successful:", response);
+        
+        // Check if login was successful
+        if (response.success) {
+          // Store only userData in session storage
+          sessionStorage.setItem('userData', JSON.stringify(response));
+          
+          // Display backend success message
+          showBackendMessage(response, 'success');
+          
+          // You can redirect here or update the UI
+          // window.location.href = '/dashboard';
+        } else {
+          // Display backend error message
+          showBackendMessage(response, 'error');
+        }
+        
+      } else {
+        console.log("Attempting admin login with:", { username: formData.username, password: "***" });
+        const response = await adminLogin(formData.username, formData.password);
+        console.log("Admin login successful:", response);
+        
+        // Check if login was successful
+        if (response.success) {
+          // Store only userData in session storage
+          sessionStorage.setItem('userData', JSON.stringify(response));
+          
+          // Display backend success message
+          showBackendMessage(response, 'success');
+          
+          // You can redirect here or update the UI
+          // window.location.href = '/admin-dashboard';
+        } else {
+          // Display backend error message
+          showBackendMessage(response, 'error');
+        }
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      showLoginErrorToast(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 px-4 font-sans relative overflow-hidden">
+      {/* Custom Toast Manager */}
+      <ToastManager />
+
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+      </div>
+
+      <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 text-white p-8 rounded-3xl shadow-2xl relative z-10 transform hover:scale-105 transition-all duration-300">
+        {/* Logo and Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl mb-4 shadow-lg">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+          </div>
+          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent tracking-tight mb-2">
+            Trackventory
+          </h1>
+          <p className="text-gray-300 font-medium">
+            Keep your stock smartly tracked 🚀
+          </p>
+        </div>
+
+        {/* Tab Trigger */}
+        <div className="mb-6">
+          <div className="flex bg-gray-800/30 backdrop-blur-sm rounded-xl p-1 border border-white/10">
+            <button
+              onClick={() => setActiveTab("user")}
+              className={`flex-1 py-3 px-6 rounded-lg text-sm font-semibold transition-all duration-300 ${
+                activeTab === "user"
+                  ? "bg-gradient-to-r from-purple-600/80 to-blue-600/80 text-white shadow-lg border border-white/20 backdrop-blur-sm"
+                  : "text-gray-300 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              User Login
+            </button>
+            <button
+              onClick={() => setActiveTab("admin")}
+              className={`flex-1 py-3 px-6 rounded-lg text-sm font-semibold transition-all duration-300 ${
+                activeTab === "admin"
+                  ? "bg-gradient-to-r from-purple-600/80 to-blue-600/80 text-white shadow-lg border border-white/20 backdrop-blur-sm"
+                  : "text-gray-300 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              Admin Login
+            </button>
+          </div>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Username Field */}
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-200">
+              {activeTab === "user" ? "Username" : "Admin Username"}
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                name="username"
+                placeholder={activeTab === "user" ? "Enter your username" : "Enter admin username"}
+                required
+                value={formData.username}
+                onChange={handleChange}
+                className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-800/50 border border-gray-600/50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
+          </div>
+
+          {/* Password Field */}
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-200">
+              Password
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Enter your password"
+                required
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full pl-10 pr-12 py-3 rounded-xl bg-gray-800/50 border border-gray-600/50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              >
+                {showPassword ? (
+                  <svg className="h-5 w-5 text-gray-400 hover:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                  </svg>
+                ) : (
+                  <svg className="h-5 w-5 text-gray-400 hover:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <label className="flex items-center">
+              <input type="checkbox" className="rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50" />
+              <span className="ml-2 text-sm text-gray-300">Remember me</span>
+            </label>
+            <a href="#" className="text-sm text-purple-400 hover:text-purple-300 transition-colors duration-200">
+              Forgot password?
+            </a>
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 rounded-xl font-semibold text-white shadow-lg transform hover:scale-105 active:scale-95"
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {activeTab === "user" ? "Signing in..." : "Admin signing in..."}
+              </div>
+            ) : (
+              activeTab === "user" ? "Sign In" : "Admin Sign In"
+            )}
+          </button>
+        </form>
+
+        {/* Footer */}
+        <div className="mt-8 text-center">
+          <p className="text-sm text-gray-400">
+            Don't have an account?{" "}
+            <a href="#" className="text-purple-400 hover:text-purple-300 font-medium transition-colors duration-200">
+              Sign up
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
