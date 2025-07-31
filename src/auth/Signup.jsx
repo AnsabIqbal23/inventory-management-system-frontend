@@ -43,13 +43,23 @@ const Signup = () => {
         console.log("Attempting user registration with:", { 
           username: formData.username, 
           email: formData.email, 
-          password: "***" 
+          password: "***",
+          phone: formData.phone,
+          location: formData.location,
+          city: formData.city,
+          state: formData.state,
+          country: formData.country
         });
         const response = await registerUser(
           formData.username, 
           formData.email, 
           formData.password, 
-          formData.confirmPassword
+          formData.confirmPassword,
+          formData.phone,
+          formData.location,
+          formData.city,
+          formData.state,
+          formData.country
         );
         console.log("User registration response:", response);
         
@@ -139,42 +149,42 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 px-4 font-sans relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-gray-900 to-slate-950 px-4 font-sans relative overflow-hidden">
       {/* Custom Toast Manager */}
       <ToastManager />
 
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-slate-700 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-40 left-40 w-80 h-80 bg-indigo-600 rounded-full mix-blend-multiply filter blur-xl opacity-25 animate-blob animation-delay-4000"></div>
       </div>
 
-      <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 text-white p-8 rounded-3xl shadow-2xl relative z-10 transform hover:scale-105 transition-all duration-300">
+      <div className="w-full max-w-lg bg-slate-900/80 backdrop-blur-xl border border-slate-700/50 text-white p-6 rounded-2xl shadow-2xl relative z-10 transform hover:scale-105 transition-all duration-300">
         {/* Logo and Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl mb-4 shadow-lg">
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl mb-4 shadow-lg">
             <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
             </svg>
           </div>
-          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent tracking-tight mb-2">
+          <h1 className="text-3xl font-extrabold bg-gradient-to-r from-blue-400 via-indigo-400 to-blue-400 bg-clip-text text-transparent tracking-tight mb-2">
             Trackventory
           </h1>
-          <p className="text-gray-300 font-medium">
-            Join us and start tracking smartly 🚀
+          <p className="text-slate-300 font-medium">
+            Create your account with complete profile information 🚀
           </p>
         </div>
 
         {/* Tab Trigger */}
-        <div className="mb-6">
-          <div className="flex bg-gray-800/30 backdrop-blur-sm rounded-xl p-1 border border-white/10">
+        <div className="mb-4">
+          <div className="flex bg-slate-800/50 backdrop-blur-sm rounded-xl p-1 border border-slate-600/50">
             <button
               onClick={() => setActiveTab("user")}
               className={`flex-1 py-3 px-6 rounded-lg text-sm font-semibold transition-all duration-300 ${
                 activeTab === "user"
-                  ? "bg-gradient-to-r from-purple-600/80 to-blue-600/80 text-white shadow-lg border border-white/20 backdrop-blur-sm"
-                  : "text-gray-300 hover:text-white hover:bg-white/5"
+                  ? "bg-gradient-to-r from-blue-600/80 to-indigo-600/80 text-white shadow-lg border border-blue-400/30 backdrop-blur-sm"
+                  : "text-slate-300 hover:text-white hover:bg-slate-700/30"
               }`}
             >
               User Signup
@@ -183,8 +193,8 @@ const Signup = () => {
               onClick={() => setActiveTab("admin")}
               className={`flex-1 py-3 px-6 rounded-lg text-sm font-semibold transition-all duration-300 ${
                 activeTab === "admin"
-                  ? "bg-gradient-to-r from-purple-600/80 to-blue-600/80 text-white shadow-lg border border-white/20 backdrop-blur-sm"
-                  : "text-gray-300 hover:text-white hover:bg-white/5"
+                  ? "bg-gradient-to-r from-blue-600/80 to-indigo-600/80 text-white shadow-lg border border-blue-400/30 backdrop-blur-sm"
+                  : "text-slate-300 hover:text-white hover:bg-slate-700/30"
               }`}
             >
               Admin Signup
@@ -193,15 +203,15 @@ const Signup = () => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           {/* Username Field */}
           <div className="space-y-2">
-            <label className="block text-sm font-semibold text-gray-200">
+            <label className="block text-sm font-semibold text-slate-200">
               {activeTab === "user" ? "Username" : "Admin Username"}
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
@@ -212,19 +222,19 @@ const Signup = () => {
                 required
                 value={formData.username}
                 onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-800/50 border border-gray-600/50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-800/50 border border-slate-600/50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               />
             </div>
           </div>
 
           {/* Email Field */}
           <div className="space-y-2">
-            <label className="block text-sm font-semibold text-gray-200">
+            <label className="block text-sm font-semibold text-slate-200">
               Email
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
@@ -235,19 +245,19 @@ const Signup = () => {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-800/50 border border-gray-600/50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-800/50 border border-slate-600/50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               />
             </div>
           </div>
 
           {/* Password Field */}
           <div className="space-y-2">
-            <label className="block text-sm font-semibold text-gray-200">
+            <label className="block text-sm font-semibold text-slate-200">
               Password
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
@@ -258,7 +268,7 @@ const Signup = () => {
                 required
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full pl-10 pr-12 py-3 rounded-xl bg-gray-800/50 border border-gray-600/50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                className="w-full pl-10 pr-12 py-3 rounded-xl bg-slate-800/50 border border-slate-600/50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               />
               <button
                 type="button"
@@ -266,11 +276,11 @@ const Signup = () => {
                 className="absolute inset-y-0 right-0 pr-3 flex items-center"
               >
                 {showPassword ? (
-                  <svg className="h-5 w-5 text-gray-400 hover:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-5 w-5 text-slate-400 hover:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
                   </svg>
                 ) : (
-                  <svg className="h-5 w-5 text-gray-400 hover:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-5 w-5 text-slate-400 hover:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
@@ -281,12 +291,12 @@ const Signup = () => {
 
           {/* Confirm Password Field */}
           <div className="space-y-2">
-            <label className="block text-sm font-semibold text-gray-200">
+            <label className="block text-sm font-semibold text-slate-200">
               Confirm Password
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
@@ -297,7 +307,7 @@ const Signup = () => {
                 required
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="w-full pl-10 pr-12 py-3 rounded-xl bg-gray-800/50 border border-gray-600/50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                className="w-full pl-10 pr-12 py-3 rounded-xl bg-slate-800/50 border border-slate-600/50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               />
               <button
                 type="button"
@@ -305,11 +315,11 @@ const Signup = () => {
                 className="absolute inset-y-0 right-0 pr-3 flex items-center"
               >
                 {showConfirmPassword ? (
-                  <svg className="h-5 w-5 text-gray-400 hover:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-5 w-5 text-slate-400 hover:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
                   </svg>
                 ) : (
-                  <svg className="h-5 w-5 text-gray-400 hover:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-5 w-5 text-slate-400 hover:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
@@ -318,108 +328,128 @@ const Signup = () => {
             </div>
           </div>
 
-          {/* Admin-specific fields */}
+          {/* Phone Field for all users */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm font-semibold text-slate-200">
+              <svg className="h-4 w-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              Phone Number 
+              <span className="text-red-400 text-xs">*</span>
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+              </div>
+              <input
+                type="tel"
+                name="phone"
+                placeholder="Enter your phone number"
+                required
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-800/50 border border-slate-600/50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
+          </div>
+
+          {/* Location Field for all users */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm font-semibold text-slate-200">
+              <svg className="h-4 w-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Location
+              <span className="text-red-400 text-xs">*</span>
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                name="location"
+                placeholder="Enter your location/address"
+                required
+                value={formData.location}
+                onChange={handleChange}
+                className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-800/50 border border-slate-600/50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
+          </div>
+
+          {/* City, State, Country Fields for all users */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <label className="flex items-center gap-1 text-sm font-semibold text-slate-200">
+                <svg className="h-3 w-3 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                City <span className="text-red-400 text-xs">*</span>
+              </label>
+              <input
+                type="text"
+                name="city"
+                placeholder="City"
+                required
+                value={formData.city}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-600/50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="flex items-center gap-1 text-sm font-semibold text-slate-200">
+                <svg className="h-3 w-3 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                </svg>
+                State <span className="text-red-400 text-xs">*</span>
+              </label>
+              <input
+                type="text"
+                name="state"
+                placeholder="State"
+                required
+                value={formData.state}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-600/50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="flex items-center gap-1 text-sm font-semibold text-slate-200">
+                <svg className="h-3 w-3 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Country <span className="text-red-400 text-xs">*</span>
+              </label>
+              <input
+                type="text"
+                name="country"
+                placeholder="Country"
+                required
+                value={formData.country}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-600/50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
+          </div>
+
+          {/* Additional admin-specific fields - keeping for compatibility but now empty */}
           {activeTab === "admin" && (
-            <>
-              {/* Phone Field */}
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-200">
-                  Phone Number
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                  </div>
-                  <input
-                    type="tel"
-                    name="phone"
-                    placeholder="Enter your phone number"
-                    required
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-800/50 border border-gray-600/50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-              </div>
-
-              {/* Location Field */}
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-200">
-                  Location
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                  </div>
-                  <input
-                    type="text"
-                    name="location"
-                    placeholder="Enter your location"
-                    required
-                    value={formData.location}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-800/50 border border-gray-600/50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-              </div>
-
-              {/* City, State, Country Fields */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-200">
-                    City
-                  </label>
-                  <input
-                    type="text"
-                    name="city"
-                    placeholder="City"
-                    required
-                    value={formData.city}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-600/50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-200">
-                    State
-                  </label>
-                  <input
-                    type="text"
-                    name="state"
-                    placeholder="State"
-                    required
-                    value={formData.state}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-600/50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-200">
-                    Country
-                  </label>
-                  <input
-                    type="text"
-                    name="country"
-                    placeholder="Country"
-                    required
-                    value={formData.country}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-600/50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-              </div>
-            </>
+            <div className="text-center py-2">
+              <p className="text-xs text-slate-400 italic">All required fields are now included above</p>
+            </div>
           )}
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 rounded-xl font-semibold text-white shadow-lg transform hover:scale-105 active:scale-95"
+            className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 rounded-xl font-semibold text-white shadow-lg transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-800"
           >
             {isLoading ? (
               <div className="flex items-center justify-center">
@@ -437,11 +467,11 @@ const Signup = () => {
 
         {/* Footer */}
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-slate-400">
             Already have an account?{" "}
             <button
               onClick={handleLoginClick}
-              className="text-purple-400 hover:text-purple-300 font-medium transition-colors duration-200"
+              className="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200"
             >
               Sign in
             </button>
