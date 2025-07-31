@@ -31,6 +31,7 @@ const Users = () => {
   const [loading, setLoading] = useState(false);
   const [userDetailsLoading, setUserDetailsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [showUserDetails, setShowUserDetails] = useState(false);
 
   // Get user data from session storage for authentication
@@ -107,12 +108,19 @@ const Users = () => {
     setSelectedUser(null);
   };
 
-  // Filter users based on search term
-  const filteredUsers = users.filter(user =>
-    user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.userId?.toString().includes(searchTerm)
-  );
+  // Filter users based on search term and status
+  const filteredUsers = users.filter(user => {
+    const matchesSearch = user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.userId?.toString().includes(searchTerm);
+    
+    const matchesStatus = statusFilter === 'all' || 
+      (user.status && user.status.toLowerCase() === statusFilter.toLowerCase()) ||
+      (statusFilter === 'active' && user.success === true) ||
+      (statusFilter === 'inactive' && user.success === false);
+    
+    return matchesSearch && matchesStatus;
+  });
 
   const isUserAdmin = (userRoles) => {
     return userRoles && Array.isArray(userRoles) && userRoles.includes('ROLE_ADMIN');
@@ -149,18 +157,28 @@ const Users = () => {
             </div>
           </div>
           
-          <Button
-            onClick={handleRefresh}
-            disabled={loading}
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-          >
-            {loading ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <RefreshCw className="h-4 w-4 mr-2" />
-            )}
-            Refresh
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={() => navigate('/admin/add-user')}
+              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+            >
+              <User className="h-4 w-4 mr-2" />
+              Add New User
+            </Button>
+            
+            <Button
+              onClick={handleRefresh}
+              disabled={loading}
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+            >
+              {loading ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4 mr-2" />
+              )}
+              Refresh
+            </Button>
+          </div>
         </div>
 
         {!showUserDetails ? (
@@ -177,6 +195,24 @@ const Users = () => {
                   className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-800/50 border border-slate-600/50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white"
                 />
               </div>
+              
+              <div className="relative">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="appearance-none bg-slate-800/50 border border-slate-600/50 text-white px-4 py-3 pr-8 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="all">All Status</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                  </svg>
+                </div>
+              </div>
+              
               <div className="flex items-center gap-2 text-sm text-slate-400">
                 <UsersIcon className="h-4 w-4" />
                 <span>{filteredUsers.length} users found</span>
@@ -231,13 +267,19 @@ const Users = () => {
                           }`}>
                             {isUserAdmin(user.roles) ? 'Admin' : 'User'}
                           </span>
-                          {user.success !== undefined && (
+                          {user.status && (
                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                              user.success
+                              user.status.toLowerCase() === 'active'
                                 ? 'bg-green-500/20 text-green-300 border border-green-500/30'
-                                : 'bg-red-500/20 text-red-300 border border-red-500/30'
+                                : user.status.toLowerCase() === 'inactive'
+                                ? 'bg-red-500/20 text-red-300 border border-red-500/30'
+                                : user.status.toLowerCase() === 'pending'
+                                ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
+                                : user.status.toLowerCase() === 'suspended'
+                                ? 'bg-orange-500/20 text-orange-300 border border-orange-500/30'
+                                : 'bg-gray-500/20 text-gray-300 border border-gray-500/30'
                             }`}>
-                              {user.success ? 'Active' : 'Inactive'}
+                              {user.status}
                             </span>
                           )}
                         </div>
@@ -334,23 +376,43 @@ const Users = () => {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <span className="text-slate-400">Status</span>
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                          selectedUser.success
-                            ? 'bg-green-500/20 text-green-300 border border-green-500/30'
-                            : 'bg-red-500/20 text-red-300 border border-red-500/30'
-                        }`}>
-                          {selectedUser.success ? (
-                            <>
-                              <CheckCircle className="h-4 w-4 mr-1" />
-                              Active
-                            </>
-                          ) : (
-                            <>
-                              <XCircle className="h-4 w-4 mr-1" />
-                              Inactive
-                            </>
-                          )}
-                        </span>
+                        {selectedUser.status ? (
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                            selectedUser.status.toLowerCase() === 'active'
+                              ? 'bg-green-500/20 text-green-300 border border-green-500/30'
+                              : selectedUser.status.toLowerCase() === 'inactive'
+                              ? 'bg-red-500/20 text-red-300 border border-red-500/30'
+                              : selectedUser.status.toLowerCase() === 'pending'
+                              ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
+                              : selectedUser.status.toLowerCase() === 'suspended'
+                              ? 'bg-orange-500/20 text-orange-300 border border-orange-500/30'
+                              : 'bg-gray-500/20 text-gray-300 border border-gray-500/30'
+                          }`}>
+                            {selectedUser.status.toLowerCase() === 'active' && <CheckCircle className="h-4 w-4 mr-1" />}
+                            {selectedUser.status.toLowerCase() === 'inactive' && <XCircle className="h-4 w-4 mr-1" />}
+                            {selectedUser.status.toLowerCase() === 'pending' && <Loader2 className="h-4 w-4 mr-1" />}
+                            {selectedUser.status.toLowerCase() === 'suspended' && <XCircle className="h-4 w-4 mr-1" />}
+                            {selectedUser.status}
+                          </span>
+                        ) : (
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                            selectedUser.success
+                              ? 'bg-green-500/20 text-green-300 border border-green-500/30'
+                              : 'bg-red-500/20 text-red-300 border border-red-500/30'
+                          }`}>
+                            {selectedUser.success ? (
+                              <>
+                                <CheckCircle className="h-4 w-4 mr-1" />
+                                Active
+                              </>
+                            ) : (
+                              <>
+                                <XCircle className="h-4 w-4 mr-1" />
+                                Inactive
+                              </>
+                            )}
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-slate-400">Role</span>

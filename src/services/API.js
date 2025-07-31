@@ -1,4 +1,4 @@
-//////////////////////////////////////// ADMIN Login/Signup API ////////////////////////////////////////
+//////////////////////////////////////// ADMIN Login/Register API ////////////////////////////////////////
 
 export async function registerAdmin(username, email, password, confirmPassword, phone, location, city, state, country) {
     let url = `http://localhost:8081/api/users/admin/register`;
@@ -85,7 +85,7 @@ export async function adminLogin(username, password) {
     }
 };
 
-//////////////////////////////////////// USER Login/Signup API ////////////////////////////////////////
+//////////////////////////////////////// USER Login/Register API ////////////////////////////////////////
 
 export async function registerUser(username, email, password, confirmPassword, phone = null, location = null, city = null, state = null, country = null) {
     let url = `http://localhost:8081/api/users/register`;

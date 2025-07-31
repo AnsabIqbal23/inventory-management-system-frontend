@@ -88,10 +88,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
     {
       title: "Users",
       icon: Users,
-      items: [
-        { title: "All Users", icon: User, url: "/admin/users" },
-        { title: "Add User", icon: Plus, url: "/admin/users/add" },
-      ],
+      url: "/admin/users",
     },
     {
       title: "Orders",

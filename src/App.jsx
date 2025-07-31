@@ -1,13 +1,35 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Login from './auth/Login';
-import Signup from './auth/Signup';
 import Dashboard from './components/Dashboard';
 import Users from './components/Users';
+import AddNewUser from './components/AddNewUser';
+import { validateSession, setupSessionMonitoring, setupActivityListeners } from './utils/sessionManager';
 import './App.css';
 
-// Protected Route Component
+// Protected Route Component with Session Management
 const ProtectedRoute = ({ children }) => {
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    // Validate session on component mount
+    if (!validateSession(navigate)) {
+      return;
+    }
+    
+    // Set up session monitoring
+    const monitoringInterval = setupSessionMonitoring(navigate);
+    
+    // Set up activity listeners
+    const cleanupActivityListeners = setupActivityListeners();
+    
+    // Cleanup on unmount
+    return () => {
+      clearInterval(monitoringInterval);
+      cleanupActivityListeners();
+    };
+  }, [navigate]);
+  
   const userData = sessionStorage.getItem('userData');
   
   if (!userData) {
@@ -35,7 +57,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
           <Route 
             path="/dashboard" 
             element={
@@ -49,6 +70,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Users />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/add-user" 
+            element={
+              <ProtectedRoute>
+                <AddNewUser />
               </ProtectedRoute>
             } 
           />

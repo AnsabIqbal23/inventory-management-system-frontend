@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { adminLogin, userLogin } from "@/services/API";
 import ToastManager from "../components/ToastManager";
 import { showBackendMessage, showLoginErrorToast } from "../utils/toast";
+import { initializeSession } from "../utils/sessionManager";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -62,6 +63,9 @@ const Login = () => {
           sessionStorage.setItem('userData', JSON.stringify(response));
           console.log('User login successful, stored data:', response);
           
+          // Initialize session tracking
+          initializeSession();
+          
           // Display backend success message
           showBackendMessage(response, 'success');
           
@@ -86,6 +90,9 @@ const Login = () => {
           // Store only userData in session storage
           sessionStorage.setItem('userData', JSON.stringify(response));
           console.log('Admin login successful, stored data:', response);
+          
+          // Initialize session tracking
+          initializeSession();
           
           // Display backend success message
           showBackendMessage(response, 'success');
