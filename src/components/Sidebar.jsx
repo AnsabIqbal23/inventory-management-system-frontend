@@ -18,6 +18,7 @@ import {
   X,
   ChevronDown,
   ChevronRight,
+  Store,
 } from "lucide-react";
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
@@ -57,14 +58,19 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       ],
     },
     {
-      title: "Orders",
+      title: "Stores",
       icon: ShoppingCart,
-      url: "/orders",
+      url: "/stores",
     },
     {
       title: "Reports",
       icon: BarChart3,
       url: "/reports",
+    },
+    {
+      title: "Settings",
+      icon: Settings,
+      url: "/settings",
     },
   ];
 
@@ -91,12 +97,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       url: "/admin/users",
     },
     {
-      title: "Orders",
+      title: "Stores",
       icon: ShoppingCart,
-      items: [
-        { title: "All Orders", icon: List, url: "/admin/orders" },
-        { title: "Pending", icon: Package, url: "/admin/orders/pending" },
-      ],
+      url: "/stores",
     },
     {
       title: "Analytics",
@@ -106,7 +109,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
     {
       title: "Settings",
       icon: Settings,
-      url: "/admin/settings",
+      url: "/settings",
     },
   ];
 

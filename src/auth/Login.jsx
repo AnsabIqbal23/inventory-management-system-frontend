@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { adminLogin, userLogin } from "@/services/API";
+import { adminLogin, userLogin, forgetPassword } from "@/services/API";
 import ToastManager from "../components/ToastManager";
 import { showBackendMessage, showLoginErrorToast } from "../utils/toast";
 import { initializeSession } from "../utils/sessionManager";
@@ -14,6 +14,15 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState("user");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotPasswordData, setForgotPasswordData] = useState({
+    username: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
+  const [isForgotPasswordLoading, setIsForgotPasswordLoading] = useState(false);
+  const [showForgotNewPassword, setShowForgotNewPassword] = useState(false);
+  const [showForgotConfirmPassword, setShowForgotConfirmPassword] = useState(false);
 
   // Check for existing session data on component mount
   useEffect(() => {
@@ -127,6 +136,65 @@ const Login = () => {
     } catch (error) {
       console.log("Error clearing session data:", error);
     }
+  };
+
+  const handleForgotPasswordSubmit = async (e) => {
+    e.preventDefault();
+
+    // Check if all fields are filled
+    if (!forgotPasswordData.username.trim()) {
+      showBackendMessage({ success: false, message: "Username is required" }, 'error');
+      return;
+    }
+
+    if (!forgotPasswordData.newPassword.trim()) {
+      showBackendMessage({ success: false, message: "New password is required" }, 'error');
+      return;
+    }
+
+    if (!forgotPasswordData.confirmPassword.trim()) {
+      showBackendMessage({ success: false, message: "Confirm password is required" }, 'error');
+      return;
+    }
+
+    if (forgotPasswordData.newPassword !== forgotPasswordData.confirmPassword) {
+      showBackendMessage({ success: false, message: "Passwords do not match" }, 'error');
+      return;
+    }
+
+    if (forgotPasswordData.newPassword.length < 6) {
+      showBackendMessage({ success: false, message: "Password must be at least 6 characters long" }, 'error');
+      return;
+    }
+
+    setIsForgotPasswordLoading(true);
+
+    try {
+      const passwordData = {
+        password: forgotPasswordData.newPassword,
+        confirmPassword: forgotPasswordData.confirmPassword
+      };
+
+      const response = await forgetPassword(forgotPasswordData.username, passwordData);
+      console.log("Forgot password response:", response);
+
+      if (response && response.success !== false) {
+        showBackendMessage({ success: true, message: "Password reset successfully" }, 'success');
+        setShowForgotPassword(false);
+        setForgotPasswordData({ username: "", newPassword: "", confirmPassword: "" });
+      } else {
+        showBackendMessage(response, 'error');
+      }
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      showBackendMessage({ success: false, message: "Failed to reset password" }, 'error');
+    } finally {
+      setIsForgotPasswordLoading(false);
+    }
+  };
+
+  const handleForgotPasswordChange = (e) => {
+    setForgotPasswordData({ ...forgotPasswordData, [e.target.name]: e.target.value });
   };
 
   return (
@@ -252,9 +320,13 @@ const Login = () => {
               <input type="checkbox" className="rounded border-slate-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
               <span className="ml-2 text-sm text-slate-300">Remember me</span>
             </label>
-            <a href="#" className="text-sm text-blue-400 hover:text-blue-300 transition-colors duration-200">
+            <button
+              type="button"
+              onClick={() => setShowForgotPassword(true)}
+              className="text-sm text-blue-400 hover:text-blue-300 transition-colors duration-200"
+            >
               Forgot password?
-            </a>
+            </button>
           </div>
 
           <button
@@ -275,20 +347,117 @@ const Login = () => {
             )}
           </button>
         </form>
-
-        {/* Footer */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-slate-400">
-            Don't have an account?{" "}
-            <button
-              onClick={handleSignupClick}
-              className="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200"
-            >
-              Sign up
-            </button>
-          </p>
-        </div>
       </div>
+
+      {/* Forgot Password Modal */}
+      {showForgotPassword && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-slate-800 rounded-2xl p-6 w-full max-w-md border border-slate-700">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-white">Reset Password</h3>
+              <button
+                onClick={() => setShowForgotPassword(false)}
+                className="text-slate-400 hover:text-white"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <form onSubmit={handleForgotPasswordSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-200">Username</label>
+                <input
+                  type="text"
+                  name="username"
+                  value={forgotPasswordData.username}
+                  onChange={handleForgotPasswordChange}
+                  className="w-full pl-3 pr-3 py-3 rounded-xl bg-slate-700/50 border border-slate-600/50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white"
+                  placeholder="Enter your username"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-200">New Password</label>
+                <div className="relative">
+                  <input
+                    type={showForgotNewPassword ? "text" : "password"}
+                    name="newPassword"
+                    value={forgotPasswordData.newPassword}
+                    onChange={handleForgotPasswordChange}
+                    className="w-full pl-3 pr-12 py-3 rounded-xl bg-slate-700/50 border border-slate-600/50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white"
+                    placeholder="Enter new password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotNewPassword(!showForgotNewPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  >
+                    {showForgotNewPassword ? (
+                      <svg className="h-5 w-5 text-slate-400 hover:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                      </svg>
+                    ) : (
+                      <svg className="h-5 w-5 text-slate-400 hover:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-200">Confirm New Password</label>
+                <div className="relative">
+                  <input
+                    type={showForgotConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    value={forgotPasswordData.confirmPassword}
+                    onChange={handleForgotPasswordChange}
+                    className="w-full pl-3 pr-12 py-3 rounded-xl bg-slate-700/50 border border-slate-600/50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white"
+                    placeholder="Confirm new password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotConfirmPassword(!showForgotConfirmPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  >
+                    {showForgotConfirmPassword ? (
+                      <svg className="h-5 w-5 text-slate-400 hover:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                      </svg>
+                    ) : (
+                      <svg className="h-5 w-5 text-slate-400 hover:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(false)}
+                  className="flex-1 py-3 bg-slate-600 hover:bg-slate-700 transition-colors duration-200 rounded-xl font-semibold text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isForgotPasswordLoading}
+                  className="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 rounded-xl font-semibold text-white"
+                >
+                  {isForgotPasswordLoading ? "Resetting..." : "Reset Password"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

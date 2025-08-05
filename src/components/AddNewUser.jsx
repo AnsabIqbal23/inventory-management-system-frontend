@@ -41,6 +41,7 @@ const AddNewUser = () => {
   // Get current user data for authorization check
   const userData = JSON.parse(sessionStorage.getItem('userData') || '{}');
   const isAdmin = userData.roles?.includes('ROLE_ADMIN') || false;
+  const token = userData.token;
 
   // Redirect if not admin
   React.useEffect(() => {
@@ -78,6 +79,7 @@ const AddNewUser = () => {
           formData.email, 
           formData.password, 
           formData.confirmPassword,
+          token,
           formData.phone,
           formData.location,
           formData.city,

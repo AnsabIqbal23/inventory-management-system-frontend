@@ -4,6 +4,8 @@ import Login from './auth/Login';
 import Dashboard from './components/Dashboard';
 import Users from './components/Users';
 import AddNewUser from './components/AddNewUser';
+import Settings from './components/Settings';
+import Store from './components/Store';
 import { validateSession, setupSessionMonitoring, setupActivityListeners } from './utils/sessionManager';
 import './App.css';
 
@@ -78,6 +80,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <AddNewUser />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/settings" 
+            element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/stores" 
+            element={
+              <ProtectedRoute>
+                <Store />
               </ProtectedRoute>
             } 
           />

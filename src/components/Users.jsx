@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllUsers, getUserById } from '@/services/API';
+import { getAllUsers, getUserById, deleteUser } from '@/services/API';
 import { Button } from "@/components/ui/button";
 import ToastManager from './ToastManager';
 import { showBackendMessage } from '../utils/toast';
@@ -21,7 +21,8 @@ import {
   Hash,
   CheckCircle,
   XCircle,
-  Loader2
+  Loader2,
+  Trash2
 } from "lucide-react";
 
 const Users = () => {
@@ -106,6 +107,30 @@ const Users = () => {
   const handleCloseDetails = () => {
     setShowUserDetails(false);
     setSelectedUser(null);
+  };
+
+  const handleDeleteUser = async (userId) => {
+    if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      console.log('Deleting user with ID:', userId);
+      const response = await deleteUser(userId, token);
+      console.log('Delete user response:', response);
+      
+      if (response && response.success !== false) {
+        showBackendMessage({ success: true, message: 'User deleted successfully' }, 'success');
+        // Refresh the users list
+        fetchAllUsers();
+      } else {
+        console.error('Failed to delete user:', response);
+        showBackendMessage(response, 'error');
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      showBackendMessage({ success: false, message: 'Failed to delete user' }, 'error');
+    }
   };
 
   // Filter users based on search term and status
@@ -304,15 +329,26 @@ const Users = () => {
                       )}
                     </div>
 
-                    {/* Action Button */}
-                    <Button
-                      onClick={() => handleViewDetails(user.userId || user.id)}
-                      className="w-full bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border border-blue-500/30 text-blue-300 hover:from-blue-600/30 hover:to-indigo-600/30 hover:text-white transition-all duration-300"
-                      variant="outline"
-                    >
-                      <Eye className="h-4 w-4 mr-2" />
-                      View Details
-                    </Button>
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => handleViewDetails(user.userId || user.id)}
+                        className="flex-1 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border border-blue-500/30 text-blue-300 hover:from-blue-600/30 hover:to-indigo-600/30 hover:text-white transition-all duration-300"
+                        variant="outline"
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        View
+                      </Button>
+                      
+                      <Button
+                        onClick={() => handleDeleteUser(user.userId || user.id)}
+                        className="flex-1 bg-gradient-to-r from-red-600/20 to-red-700/20 border border-red-500/30 text-red-300 hover:from-red-600/30 hover:to-red-700/30 hover:text-white transition-all duration-300"
+                        variant="outline"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
